@@ -19,13 +19,14 @@ public abstract class Knight extends Combatant
 
   public boolean encounterBadGuy(Enemy villain) throws InvalidSubTypeException
   {
-    System.out.println("Encountered bad guy");
     boolean UserAlive=true;
     Random rand = new Random();
     boolean coin = rand.nextBoolean();
     if (coin) //randomly decides who attacks first
     {
+      GenericsGauntlet.gui.dialogBox.setText("The villain will now attack you, they go attack first about half the time!");
       villain.attack(this);
+
     }
 
     while (health>0 && villain.health>0)
@@ -43,4 +44,10 @@ public abstract class Knight extends Combatant
     trap.activate(this);
     return UserAlive;
   }
+
+  public void updateInventoryDisplay()
+  {
+
+  }
+
 }

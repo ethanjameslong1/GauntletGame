@@ -1,9 +1,9 @@
 public abstract class Combatant
 {
-  final int WEAPON_SLOT = 0;
+  static final int WEAPON_SLOT = 0;
   Inventory inventory;
   protected String name;
-  protected int health,mana;
+  public int health,mana;
   public abstract int takeDamage(int damage, char weaponSubType) throws InvalidSubTypeException;
 
   public void attack(Combatant villain) throws InvalidSubTypeException {
@@ -17,5 +17,6 @@ public abstract class Combatant
     if (inventory.getSlot(WEAPON_SLOT).usesLeft <= 0) attackersDamage = 3; //uses fist when out of uses
     inventory.getSlot(WEAPON_SLOT).usesLeft--;
     villain.takeDamage(attackersDamage,attackersSubtype);
+
   }
 }

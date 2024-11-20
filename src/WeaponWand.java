@@ -5,7 +5,7 @@ public class WeaponWand<T> extends Item
   int manaUse; //probably can be private, we'll see
   public WeaponWand(T owner, int level)
   {
-    manaUse = DEFAULT_MANA_USE*(int)(level/3);
+    manaUse = DEFAULT_MANA_USE*(int)(level/3)+2;
     user=owner;
     usesLeft = 99999;
     type = 'W';
