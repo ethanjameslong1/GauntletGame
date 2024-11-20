@@ -7,7 +7,7 @@ public class EnemySorcerer extends Enemy
   final float MAGIC_WEAPON_DAMAGE_MODIFIER = 0.6f;
   EnemySorcerer(int level)
   {
-    mana = 9999;
+    mana = 100*level;
     inventory = new Inventory<Item>(DEFAULT_ENEMY_INV_SLOTS);
     this.level = level;
     this.health = 7*level;
@@ -26,15 +26,15 @@ public class EnemySorcerer extends Enemy
     {
       case 'A': case'S':
       if(dice<=1) return 0;
-      health-=(int)damage*SHARP_WEAPON_DAMAGE_MODIFIER;
-      return (int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER);
+      health-=1+(int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER);
+      return 1+((int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER));
       case 'H':
         if(dice<=2) return 0;
-        health-=(int)damage*BLUNT_WEAPON_DAMAGE_MODIFIER;
-        return (int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER);
+        health-=1+(int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER);
+        return 1+((int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER));
       case 'W':
         if (dice==0) return 0;
-        health-=(int)damage*MAGIC_WEAPON_DAMAGE_MODIFIER;
+        health-=1+(int)(damage*MAGIC_WEAPON_DAMAGE_MODIFIER);
         return (int)(damage*MAGIC_WEAPON_DAMAGE_MODIFIER);
       default: throw new InvalidSubTypeException("Error: No valid weapon subType Detected!");
     }

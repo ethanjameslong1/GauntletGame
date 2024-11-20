@@ -167,11 +167,9 @@ public class GUI
       public void actionPerformed(ActionEvent e)
       {
         dialogBox.setText("You attack the enemy!!");
-        try {
-          GenericsGauntlet.user.attack(GenericsGauntlet.currentVillain);
-        } catch (InvalidSubTypeException ex) {throw new RuntimeException(ex);}
-
-        addEnemyDisplay();
+        GenericsGauntlet.user.attack(GenericsGauntlet.currentVillain);
+        updateInventoryDisplay();
+        updateEnemyDisplay();
       }
     });
     userPanel.add(continueButton);
@@ -185,7 +183,7 @@ public class GUI
     enemyPanel.setLayout(null);
     enemyPanel.setBackground(Color.BLACK);
     enemyPanel.setBounds(0,0,512,512);
-    addEnemyDisplay();
+    updateEnemyDisplay();
     enemyPanel.revalidate();
     enemyPanel.repaint();
     enemyPanel.setVisible(true);
@@ -194,9 +192,12 @@ public class GUI
     frame.add(userPanel);
   }
 
-  public void updateInventoryDisplay(Combatant user)
+  public void updateInventoryDisplay()
   {
+    Knight user = GenericsGauntlet.user;
     if (user == null || user.inventory == null) return;
+    userCharacterImageLabel.setText(String.valueOf(user.health));
+    if (userPanel.isAncestorOf(userWeaponDisplayLabel)) userPanel.remove(userWeaponDisplayLabel);
 
     userWeaponDisplayLabel = new JLabel();
     userWeaponDisplayLabel.setBounds(384,160,64,64);
@@ -273,7 +274,7 @@ public class GUI
     userPanel.add(userWeaponDisplayLabel);
   }
 
-  private void addEnemyDisplay()
+  private void updateEnemyDisplay()
   {
     if (enemyPanel.isAncestorOf(enemyImageLabel)){enemyPanel.remove(enemyImageLabel);
     enemyPanel.remove(enemyWeaponLabel);}

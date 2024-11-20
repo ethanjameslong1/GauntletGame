@@ -22,9 +22,9 @@ public class KnightKnight extends Knight
   {
     switch(weaponSubType)
     {
-      case 'A': case'S': health-=(int)damage*SHARP_WEAPON_DAMAGE_MODIFIER; return (int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER);
-      case 'H': health-=(int)damage*BLUNT_WEAPON_DAMAGE_MODIFIER; return (int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER);
-      case 'W': health-=(int)damage*MAGIC_WEAPON_DAMAGE_MODIFIER; return (int)(damage*MAGIC_WEAPON_DAMAGE_MODIFIER);
+      case 'A': case'S': health-=1+(int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER); return 1+(int)(damage*SHARP_WEAPON_DAMAGE_MODIFIER);
+      case 'H': health-=1+(int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER); return 1+(int)(damage*BLUNT_WEAPON_DAMAGE_MODIFIER);
+      case 'W': health-=1+(int)(damage*MAGIC_WEAPON_DAMAGE_MODIFIER); return 1+(int)(damage*MAGIC_WEAPON_DAMAGE_MODIFIER);
       default: throw new InvalidSubTypeException("Error: No valid weapon subType Detected!");
     }
   }
