@@ -11,15 +11,15 @@ public class GenericsGauntlet {
   public static void main(String[] args)
   {
     gui = new GUI();
-
+    playGame();
   }
 
   public static void playGame()
   {
-    do {currentVillain = encounter(gameLevel);}while(currentVillain.name=="Arrow Trap" || currentVillain.level>1);
+    do {currentVillain = encounter(gameLevel);}
+    while(currentVillain.name=="Arrow Trap" || currentVillain.level>1);
+
     gui.addUserandEnemyPanel();
-
-
   }
 
 

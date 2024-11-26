@@ -9,7 +9,7 @@ public class EnemyUndeadKnight extends Enemy
   {
     inventory = new Inventory<Item>(DEFAULT_ENEMY_INV_SLOTS);
     this.level = level;
-    this.health = 6*level;
+    this.health = 15*level;
     this.name = "Undead Knight";
     WeaponSword zombieSword = new WeaponSword(this, level);
     inventory.addWeapon(zombieSword);

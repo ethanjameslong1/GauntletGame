@@ -12,6 +12,8 @@ public abstract class Combatant
   public int health,mana;
   public abstract int takeDamage(int damage, char weaponSubType) throws InvalidSubTypeException;
 
+  public boolean isAlive(){ return (health > 0); }
+
   public void attack(Combatant villain){
     int attackersDamage = inventory.getSlot(WEAPON_SLOT).damage;
     char attackersSubtype = inventory.getSlot(WEAPON_SLOT).subType;

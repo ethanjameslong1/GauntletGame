@@ -19,6 +19,8 @@ public class GUI
   private JTextArea userName;
   private JTextArea enemyName;
 
+  private JTextField characterNameField;
+
   private JButton characterOptionButton;
   private JButton confirmCharacterButton;
   private JButton continueButton;
@@ -33,6 +35,14 @@ public class GUI
 
   private String characterNameChoice="";
   public int characterChoice=1;
+
+
+
+  //*****************************************************************
+  //                                                                *
+  //    Constructor                                                 *
+  //                                                                *
+  //*****************************************************************
   public GUI()
   {
     frame = new JFrame("Gauntlet");
@@ -70,60 +80,17 @@ public class GUI
     characterSelectionPanel.add(userCharacterImageLabel);
     userCharacterImageLabel.setVisible(true);
 
-    JTextField characterNameField = new JTextField();
+    characterNameField = new JTextField();
     characterNameField.setBounds(400,306,100,25);
     characterNameField.setText("Enter Character Name");
-    characterNameField.addFocusListener(new FocusListener() {
-      @Override
-      public void focusGained(FocusEvent e) {
-        // Clear the default text when the field gains focus
-        if (characterNameField.getText().equals("Enter Character Name")) {
-          characterNameField.setText("");
-        }
-      }
-      @Override
-      public void focusLost(FocusEvent e) {
-        // Restore default text if the field is empty
-        if (characterNameField.getText().isEmpty()) {
-          characterNameField.setText("Enter Character Name");
-        }
-      }
-    });
+    characterNameField.addFocusListener(nameField);
 
 
     confirmCharacterButton = new JButton("Click to confirm character!");
     confirmCharacterButton.setBackground(Color.GRAY);
     confirmCharacterButton.setBounds(500,50,100,50);
-    confirmCharacterButton.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        characterNameChoice = characterNameField.getText();
-        if (characterNameChoice.equals("Enter Character Name")){}
-        else {
-          GenericsGauntlet.makeCharacter(characterChoice,characterNameChoice);
-          introPanel.remove(dialogBox);
-          frame.remove(introPanel);
-          frame.remove(characterSelectionPanel);
-          frame.revalidate();
-          frame.repaint();
-          GenericsGauntlet.playGame();
-        }
-      }
-    });
-    characterOptionButton.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        characterChoice += 1;
-        if (characterChoice > 3) characterChoice = 1;
-        switch (characterChoice){
-          case 1: userCharacterImageLabel.setIcon(new ImageIcon("KnightCharacterImage.png")); break;
-          case 3: userCharacterImageLabel.setIcon(new ImageIcon("femaledwarf.png")); break;
-          case 2: userCharacterImageLabel.setIcon(new ImageIcon("maleelf.png")); break;
-          default: {}
-        }
-      }
-    });
+    confirmCharacterButton.addActionListener(confirmCharAction);
+    characterOptionButton.addActionListener(characterOptionListener);
     characterSelectionPanel.add(characterOptionButton);
     characterSelectionPanel.add(confirmCharacterButton);
 
@@ -136,13 +103,85 @@ public class GUI
   }
 
 
+  //*****************************************************************
+  //                                                                *
+  //    Action Listeners                                            *
+  //                                                                *
+  //*****************************************************************
+
+  ActionListener characterOptionListener = new ActionListener() {
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    characterChoice += 1;
+    if (characterChoice > 3) characterChoice = 1;
+    switch (characterChoice){
+      case 1: userCharacterImageLabel.setIcon(new ImageIcon("KnightCharacterImage.png")); break;
+      case 3: userCharacterImageLabel.setIcon(new ImageIcon("femaledwarf.png")); break;
+      case 2: userCharacterImageLabel.setIcon(new ImageIcon("maleelf.png")); break;
+      default: {}
+    }
+  }
+  };
+
+
+  ActionListener confirmCharAction = new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      characterNameChoice = characterNameField.getText();
+      if (characterNameChoice.equals("Enter Character Name")){}
+      else {
+        GenericsGauntlet.makeCharacter(characterChoice,characterNameChoice);
+        introPanel.remove(dialogBox);
+        frame.remove(introPanel);
+        frame.remove(characterSelectionPanel);
+        frame.revalidate();
+        frame.repaint();
+        GenericsGauntlet.playGame();
+      }
+    }
+  };
+
+
+  //*****************************************************************
+  //                                                                *
+  //    Focus Listeners                                             *
+  //                                                                *
+  //*****************************************************************
+  FocusListener nameField = new FocusListener() {
+  @Override
+  public void focusGained(FocusEvent e) {
+    // Clear the default text when the field gains focus
+    if (characterNameField.getText().equals("Enter Character Name")) {
+      characterNameField.setText("");
+    }
+  }
+  @Override
+  public void focusLost(FocusEvent e) {
+    // Restore default text if the field is empty
+    if (characterNameField.getText().isEmpty()) {
+      characterNameField.setText("Enter Character Name");
+    }
+  }
+};
+
+
+
+
+  //*****************************************************************
+  //                                                                *
+  //    Initializing User and Enemy Displays                        *
+  //                                                                *
+  //*****************************************************************
+
+
   public void addUserandEnemyPanel()
-  { //this is only ran once, at the begginning of the game. It will function as a tutorial of sorts and also will never have an arrow trap
+  {
     userPanel = new JPanel();
     userPanel.setLayout(null);
     userPanel.setBackground(Color.WHITE);
     userPanel.setBounds(512,0,512,512);
-    userPanel.add(userCharacterImageLabel);//since this should never change it can be added only once
+    userPanel.add(userCharacterImageLabel);
     userCharacterImageLabel.setBounds(384,0,128,128);
     userCharacterImageLabel.setText(String.valueOf(GenericsGauntlet.user.health));
     userCharacterImageLabel.setFont(new Font("Arial", Font.BOLD, USES_FONT_SIZE));
@@ -159,17 +198,32 @@ public class GUI
     userPanel.add(dialogBox);
     userPanel.add(userName);
     addUserWeaponLabel(); //I'll have an update Inventory method that'll check and replace this as well as add potions on
-    continueButton = new JButton("Continue");
+    continueButton = new JButton("First Attack!");
     continueButton.setBackground(Color.GRAY);
     continueButton.setBounds(100,250,100,25);
     continueButton.addActionListener(new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        dialogBox.setText("You attack the enemy!!");
-        GenericsGauntlet.user.attack(GenericsGauntlet.currentVillain);
-        updateInventoryDisplay();
-        updateEnemyDisplay();
+        if (continueButton.getText() == "First Attack!")
+        {
+          dialogBox.setText("You attack the enemy!!\nThe Enemy will now attack you, hopefully you'll live.");
+          GenericsGauntlet.user.attack(GenericsGauntlet.currentVillain);
+          updateEnemyDisplay();
+          updateInventoryDisplay();
+          continueButton.setText("I'm ready!");
+        }
+        else if (continueButton.getText() == "I'm Ready!")
+        {
+          if (GenericsGauntlet.currentVillain.isAlive() && GenericsGauntlet.user.isAlive())
+          {
+            GenericsGauntlet.currentVillain.attack(GenericsGauntlet.user);
+            updateEnemyDisplay();
+            updateInventoryDisplay();
+            continueButton.setText("First Attack!");
+          }
+        }
+        else continueButton.setText("First Attack!");
       }
     });
     userPanel.add(continueButton);
@@ -192,57 +246,13 @@ public class GUI
     frame.add(userPanel);
   }
 
-  public void updateInventoryDisplay()
-  {
-    Knight user = GenericsGauntlet.user;
-    if (user == null || user.inventory == null) return;
-    userCharacterImageLabel.setText(String.valueOf(user.health));
-    if (userPanel.isAncestorOf(userWeaponDisplayLabel)) userPanel.remove(userWeaponDisplayLabel);
 
-    userWeaponDisplayLabel = new JLabel();
-    userWeaponDisplayLabel.setBounds(384,160,64,64);
-    userWeaponDisplayLabel.setFont(new Font("Arial", Font.BOLD, 14));
-    userWeaponDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-    userWeaponDisplayLabel.setForeground(Color.RED);
 
-    Item weaponSlot = user.inventory.getSlot(Combatant.WEAPON_SLOT);
-    if (weaponSlot == null) return;
-    else
-    {
-      String uses = String.valueOf(weaponSlot.usesLeft);
-      char subType = weaponSlot.subType;
-      userWeaponDisplayLabel.setIcon(new ImageIcon(getWeaponImage(subType)));
-      userWeaponDisplayLabel.setText(uses);
-    }
-    userPanel.add(userWeaponDisplayLabel);
-
-    for (int i=1; i<user.inventory.getSize(); i++)
-    if (user.inventory.getSlot(i)!=null)
-    {
-      switch(user.inventory.getSlot(i).subType)
-      {
-        case 'M':
-          manaPotionDisplayLabel.setIcon(new ImageIcon("manapotion.png"));//by using a vector of display label I want
-          manaPotionDisplayLabel.setBounds(384,(160+64),64,64); //to add support for having various potions
-          manaPotionDisplayLabel.setFont(new Font("Arial", Font.BOLD, 14));//if you have say 1 level 1 potion and 2 level 2 potion
-          manaPotionDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-          manaPotionDisplayLabel.setForeground(Color.RED);//right now it's a bug if you have multiple levels of the same potion
-          manaPotionDisplayLabel.setText(String.valueOf(user.inventory.getSlot(i).usesLeft));//it'll be fixed soon
-          userPanel.add(manaPotionDisplayLabel);
-          break;
-        case 'H':
-          healthPotionDisplayLabel.setIcon(new ImageIcon("healingpotion.png"));
-          healthPotionDisplayLabel.setBounds(384,(160+(2*64)),64,64);
-          healthPotionDisplayLabel.setFont(new Font("Arial", Font.BOLD, 14));
-          healthPotionDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-          healthPotionDisplayLabel.setForeground(Color.RED);
-          healthPotionDisplayLabel.setText(String.valueOf(user.inventory.getSlot(i).usesLeft));
-          userPanel.add(healthPotionDisplayLabel);
-          break;
-          default: {}
-      }
-    }
-  }
+  //*****************************************************************
+  // Updating Weapon Displays                                       *
+  // User Display                                                   *
+  // Enemy Display                                                  *
+  //*****************************************************************
 
   private String getWeaponImage(char subType) {
     switch (subType) {
@@ -272,6 +282,69 @@ public class GUI
       userWeaponDisplayLabel.setText(uses);
     }
     userPanel.add(userWeaponDisplayLabel);
+  }
+
+
+  //*****************************************************************
+  // Resetting Displays                                             *
+  // User Display                                                   *
+  // Enemy Display                                                  *
+  //*****************************************************************
+
+  public void updateInventoryDisplay()
+  {
+    Knight user = GenericsGauntlet.user;
+    if (user == null || user.inventory == null) return;
+    userCharacterImageLabel.setText(String.valueOf(user.health));
+    if (userPanel.isAncestorOf(userWeaponDisplayLabel)) userPanel.remove(userWeaponDisplayLabel);
+
+    userWeaponDisplayLabel = new JLabel();
+    userWeaponDisplayLabel.setBounds(384,160,64,64);
+    userWeaponDisplayLabel.setFont(new Font("Arial", Font.BOLD, USES_FONT_SIZE));
+    userWeaponDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+    userWeaponDisplayLabel.setForeground(Color.RED);
+
+    Item weaponSlot = user.inventory.getSlot(Combatant.WEAPON_SLOT);
+    if (weaponSlot == null) return;
+    else
+    {
+      String uses;
+      if (weaponSlot.subType == 'W') {uses = String.valueOf(user.mana);}
+      else {uses = String.valueOf(weaponSlot.usesLeft);}
+      char subType = weaponSlot.subType;
+      userWeaponDisplayLabel.setIcon(new ImageIcon(getWeaponImage(subType)));
+      userWeaponDisplayLabel.setText(uses);
+    }
+    userPanel.add(userWeaponDisplayLabel);
+
+    for (int i=1; i<user.inventory.getSize(); i++)
+      if (user.inventory.getSlot(i)!=null)
+      {
+        switch(user.inventory.getSlot(i).subType)
+        {
+          case 'M':
+            manaPotionDisplayLabel.setIcon(new ImageIcon("manapotion.png"));//by using a vector of display label I want
+            manaPotionDisplayLabel.setBounds(384,(160+64),64,64); //to add support for having various potions
+            manaPotionDisplayLabel.setFont(new Font("Arial", Font.BOLD, 14));//if you have say 1 level 1 potion and 2 level 2 potion
+            manaPotionDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+            manaPotionDisplayLabel.setForeground(Color.RED);//right now it's a bug if you have multiple levels of the same potion
+            manaPotionDisplayLabel.setText(String.valueOf(user.inventory.getSlot(i).usesLeft));//it'll be fixed soon
+            userPanel.add(manaPotionDisplayLabel);
+            break;
+          case 'H':
+            healthPotionDisplayLabel.setIcon(new ImageIcon("healingpotion.png"));
+            healthPotionDisplayLabel.setBounds(384,(160+(2*64)),64,64);
+            healthPotionDisplayLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            healthPotionDisplayLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+            healthPotionDisplayLabel.setForeground(Color.RED);
+            healthPotionDisplayLabel.setText(String.valueOf(user.inventory.getSlot(i).usesLeft));
+            userPanel.add(healthPotionDisplayLabel);
+            break;
+          default: {}
+        }
+      }
+    userPanel.revalidate();
+    userPanel.repaint();
   }
 
   private void updateEnemyDisplay()

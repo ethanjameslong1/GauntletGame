@@ -9,7 +9,7 @@ public class EnemyOgre extends Enemy
   {
     inventory = new Inventory<Item>(DEFAULT_ENEMY_INV_SLOTS);
     this.level = level;
-    this.health = 13*level;
+    this.health = 19*level;
     this.name = "Ogre";
     WeaponHammer ogreClub = new WeaponHammer(this, level);
     inventory.addWeapon(ogreClub);

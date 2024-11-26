@@ -10,7 +10,7 @@ public class EnemySorcerer extends Enemy
     mana = 100*level;
     inventory = new Inventory<Item>(DEFAULT_ENEMY_INV_SLOTS);
     this.level = level;
-    this.health = 7*level;
+    this.health = 11*level;
     this.name = "Sorcerer";
     WeaponWand sorcererWand = new WeaponWand(this, level);
     inventory.addWeapon(sorcererWand);
