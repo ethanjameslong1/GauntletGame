@@ -8,18 +8,20 @@ public class GenericsGauntlet {
   static GUI gui;
   static Enemy currentVillain;
   static int gameLevel = 1;
+
+
   public static void main(String[] args)
   {
     gui = new GUI();
-    playGame();
   }
 
   public static void playGame()
   {
+
     do {currentVillain = encounter(gameLevel);}
     while(currentVillain.name=="Arrow Trap" || currentVillain.level>1);
-
     gui.addUserandEnemyPanel();
+
   }
 
 
@@ -38,6 +40,15 @@ public class GenericsGauntlet {
   {
     Enemy encounteredEnemy = Enemy.getRandomEnemy(level);
     return encounteredEnemy;
+  }
+
+
+  public static boolean fightTurn(boolean playerTurn)
+  {
+    if (playerTurn)
+      user.attack(currentVillain);
+    else currentVillain.attack(user);
+    return !playerTurn;
   }
 
 }

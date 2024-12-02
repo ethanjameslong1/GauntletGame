@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Random;
 
 public class GUI
 {
@@ -35,6 +36,7 @@ public class GUI
 
   private String characterNameChoice="";
   public int characterChoice=1;
+  private boolean playerTurn=true;
 
 
 
@@ -142,6 +144,16 @@ public class GUI
     }
   };
 
+  ActionListener continueButtonListener = new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+     playerTurn = GenericsGauntlet.fightTurn(playerTurn);
+      updateEnemyDisplay();
+      updateInventoryDisplay();
+    }
+  };
+
 
   //*****************************************************************
   //                                                                *
@@ -194,38 +206,14 @@ public class GUI
     userName.setForeground(Color.WHITE);
     userName.setBounds(384,128,128,25);
     dialogBox.setBounds(0,0,300,250);
-    dialogBox.setText("Welcome to the game, you're first encounter has arrived.");
+    dialogBox.setText("Welcome to the game, you will face waves of enemies and the occasional trap.\n Should you live past a trap there will always be treasure to choose from!");
     userPanel.add(dialogBox);
     userPanel.add(userName);
-    addUserWeaponLabel(); //I'll have an update Inventory method that'll check and replace this as well as add potions on
-    continueButton = new JButton("First Attack!");
+    addUserWeaponLabel();
+    continueButton = new JButton("Begin!");
     continueButton.setBackground(Color.GRAY);
     continueButton.setBounds(100,250,100,25);
-    continueButton.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (continueButton.getText() == "First Attack!")
-        {
-          dialogBox.setText("You attack the enemy!!\nThe Enemy will now attack you, hopefully you'll live.");
-          GenericsGauntlet.user.attack(GenericsGauntlet.currentVillain);
-          updateEnemyDisplay();
-          updateInventoryDisplay();
-          continueButton.setText("I'm ready!");
-        }
-        else if (continueButton.getText() == "I'm Ready!")
-        {
-          if (GenericsGauntlet.currentVillain.isAlive() && GenericsGauntlet.user.isAlive())
-          {
-            GenericsGauntlet.currentVillain.attack(GenericsGauntlet.user);
-            updateEnemyDisplay();
-            updateInventoryDisplay();
-            continueButton.setText("First Attack!");
-          }
-        }
-        else continueButton.setText("First Attack!");
-      }
-    });
+    continueButton.addActionListener(continueButtonListener);
     userPanel.add(continueButton);
 
     userPanel.revalidate();
@@ -317,7 +305,7 @@ public class GUI
     }
     userPanel.add(userWeaponDisplayLabel);
 
-    for (int i=1; i<user.inventory.getSize(); i++)
+    /*for (int i=1; i<user.inventory.getSize(); i++)
       if (user.inventory.getSlot(i)!=null)
       {
         switch(user.inventory.getSlot(i).subType)
@@ -342,7 +330,7 @@ public class GUI
             break;
           default: {}
         }
-      }
+      }*/
     userPanel.revalidate();
     userPanel.repaint();
   }
