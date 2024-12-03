@@ -1,6 +1,6 @@
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Random;
-
 import static java.lang.Character.toUpperCase;
 
 public class GenericsGauntlet {
@@ -8,20 +8,20 @@ public class GenericsGauntlet {
   static GUI gui;
   static Enemy currentVillain;
   static int gameLevel = 1;
+  static int encounters = 0;
 
 
   public static void main(String[] args)
   {
     gui = new GUI();
+    playGame();
   }
 
   public static void playGame()
   {
-
     do {currentVillain = encounter(gameLevel);}
     while(currentVillain.name=="Arrow Trap" || currentVillain.level>1);
-    gui.addUserandEnemyPanel();
-
+    gui.startingGUI();
   }
 
 
@@ -38,7 +38,8 @@ public class GenericsGauntlet {
 
   public static Enemy encounter(int level)
   {
-    Enemy encounteredEnemy = Enemy.getRandomEnemy(level);
+    Enemy encounteredEnemy;
+    do {encounteredEnemy = Enemy.getRandomEnemy(level);} while (Objects.equals(encounteredEnemy.name, "Arrow Trap"));
     return encounteredEnemy;
   }
 
@@ -51,4 +52,5 @@ public class GenericsGauntlet {
     return !playerTurn;
   }
 
+  public static boolean bothAlive(){ return (user.health>0 && currentVillain.health>0); }
 }

@@ -24,7 +24,8 @@ public class GUI
 
   private JButton characterOptionButton;
   private JButton confirmCharacterButton;
-  private JButton continueButton;
+  private JButton beginButton;
+  private JButton actionButton;
 
   private JLabel userCharacterImageLabel;
   private JLabel userWeaponDisplayLabel;
@@ -39,13 +40,13 @@ public class GUI
   private boolean playerTurn=true;
 
 
-
+  public GUI(){ }
   //*****************************************************************
   //                                                                *
-  //    Constructor                                                 *
+  //    Psueod-Constructor                                          *
   //                                                                *
   //*****************************************************************
-  public GUI()
+  public void startingGUI()
   {
     frame = new JFrame("Gauntlet");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,6 +105,57 @@ public class GUI
     frame.setVisible(true);
   }
 
+  public void newStartingGUI()
+  {
+
+    introPanel = new JPanel();
+    introPanel.setBackground(Color.WHITE);
+    introPanel.setBounds(0,0,1024,212);
+    dialogBox = new JTextPane();
+    dialogBox.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+    dialogBox.setText("Hello!! Welcome to the Generics Gauntlet. You will begin by choosing a character.\n" +
+            "1) Elf: Well known for it's magical expertise, having by far the best mana stat.\n" +
+            "Everytime it's attacked it has a chance of dodging! Works especially well against slow, blunt weapons.\n" +
+            "2) Knight: Standard Knight, good defense and offensive abilities against most enemies, most weak to magic attacks.\n" +
+            "3) Dwarf: Great defense with a mighty Hammer.\n");
+    dialogBox.setEditable(false);
+    dialogBox.setBackground(Color.WHITE);
+    introPanel.add(dialogBox);
+
+    characterSelectionPanel = new JPanel();
+    characterSelectionPanel.setBackground(Color.WHITE);
+    characterSelectionPanel.setBounds(0,212,1024,300);
+    characterOptionButton = new JButton("Click to change choice!");
+    characterOptionButton.setBackground(Color.GRAY);
+    characterOptionButton.setBounds(400,50,100,50);
+
+
+    userCharacterImageLabel = new JLabel(new ImageIcon("KnightCharacterImage.png"));
+    userCharacterImageLabel.setBounds(400,200,128,128);
+    characterSelectionPanel.add(userCharacterImageLabel);
+    userCharacterImageLabel.setVisible(true);
+
+    characterNameField = new JTextField();
+    characterNameField.setBounds(400,306,100,25);
+    characterNameField.setText("Enter Character Name");
+    characterNameField.addFocusListener(nameField);
+
+
+    confirmCharacterButton = new JButton("Click to confirm character!");
+    confirmCharacterButton.setBackground(Color.GRAY);
+    confirmCharacterButton.setBounds(500,50,100,50);
+    confirmCharacterButton.addActionListener(confirmCharAction);
+    characterOptionButton.addActionListener(characterOptionListener);
+    characterSelectionPanel.add(characterOptionButton);
+    characterSelectionPanel.add(confirmCharacterButton);
+
+
+    characterSelectionPanel.add(characterNameField);
+    frame.add(introPanel);
+    frame.add(characterSelectionPanel);
+    frame.repaint();
+    frame.setVisible(true);
+  }
 
   //*****************************************************************
   //                                                                *
@@ -139,18 +191,78 @@ public class GUI
         frame.remove(characterSelectionPanel);
         frame.revalidate();
         frame.repaint();
-        GenericsGauntlet.playGame();
+        addUserandEnemyPanel();
       }
     }
   };
 
-  ActionListener continueButtonListener = new ActionListener(){
+  ActionListener beginButtonListener = new ActionListener(){
     @Override
     public void actionPerformed(ActionEvent e)
     {
-     playerTurn = GenericsGauntlet.fightTurn(playerTurn);
+      GenericsGauntlet.fightTurn(true);
       updateEnemyDisplay();
       updateInventoryDisplay();
+      beginButton.setText("Attack!!!!");
+      if(GenericsGauntlet.currentVillain.isAlive()==false)
+      {
+        GenericsGauntlet.currentVillain = GenericsGauntlet.encounter(GenericsGauntlet.gameLevel);
+        updateEnemyDisplay();
+        dialogBox.setText("Congratulations! Next time the enemy will attack back.\nClick Continue to play for real.");
+        actionButton = new JButton("Continue");
+        actionButton.setBackground(Color.GRAY);
+        actionButton.setBounds(100,250,100,25);
+        actionButton.addActionListener(actionButtonListener);
+        userPanel.add(actionButton);
+        userPanel.remove(beginButton);
+        userPanel.revalidate();
+        userPanel.repaint();
+      }
+    }
+  };
+
+  ActionListener actionButtonListener = new ActionListener(){
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      if (GenericsGauntlet.bothAlive())
+      {
+        playerTurn = GenericsGauntlet.fightTurn(playerTurn);
+        updateEnemyDisplay();
+        updateInventoryDisplay();
+        if (GenericsGauntlet.bothAlive())
+        {
+          if (playerTurn) actionButton.setText("Attack");
+          else actionButton.setText("Ready...");
+        }
+        else if (!GenericsGauntlet.user.isAlive())
+        {
+          dialogBox.setText("It seems you have died.");
+          frame.getContentPane().removeAll();
+          frame.revalidate();
+          frame.repaint();
+          newStartingGUI();
+        }
+        else
+        {
+          Random rand = new Random();
+          playerTurn = rand.nextBoolean();
+          GenericsGauntlet.currentVillain = GenericsGauntlet.encounter(GenericsGauntlet.gameLevel);
+          updateEnemyDisplay();
+        }
+      }
+      else
+      {
+        dialogBox.setText("It seems something went wrong.");
+        frame.getContentPane().removeAll();
+        frame.revalidate();
+        frame.repaint();
+        newStartingGUI();
+      }
+      userPanel.revalidate();
+      userPanel.repaint();
+      enemyPanel.revalidate();
+      enemyPanel.repaint();
     }
   };
 
@@ -210,11 +322,11 @@ public class GUI
     userPanel.add(dialogBox);
     userPanel.add(userName);
     addUserWeaponLabel();
-    continueButton = new JButton("Begin!");
-    continueButton.setBackground(Color.GRAY);
-    continueButton.setBounds(100,250,100,25);
-    continueButton.addActionListener(continueButtonListener);
-    userPanel.add(continueButton);
+    beginButton = new JButton("Begin!");
+    beginButton.setBackground(Color.GRAY);
+    beginButton.setBounds(100,250,100,25);
+    beginButton.addActionListener(beginButtonListener);
+    userPanel.add(beginButton);
 
     userPanel.revalidate();
     userPanel.repaint();
@@ -241,6 +353,11 @@ public class GUI
   // User Display                                                   *
   // Enemy Display                                                  *
   //*****************************************************************
+
+  private void createGameLoop()
+  {
+
+  }
 
   private String getWeaponImage(char subType) {
     switch (subType) {
